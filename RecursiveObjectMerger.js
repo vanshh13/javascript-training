@@ -17,13 +17,14 @@ function mergeDeep(person1, person2)
     for(let key in person1)
     {
         // if key is object & both have the key
-        if(typeof person1[key] == "object"){
-            if(key in person2){
+        if(typeof person1[key] === "object" && person1[key] !== null && !Array.isArray(person1[key]) &&
+            key in person2 && typeof person2[key] === "object"&& person2[key] !== null && !Array.isArray(person2[key]) )
+        {
                 mergeDeep(person1[key], person2[key]); // recursive call for object
-            }
         }
+
         // if key-value present inside person1 & person2  ( except the person2's keys value must not be [ null, undefined ] )
-        else if(key in person1 && key in person2 && (person2[key] != undefined && person2[key] != null)){
+        else if(key in person2 && (person2[key] != undefined && person2[key] != null)){
             person1[key] = person2[key]; // copying the value
         }
     }
@@ -35,7 +36,7 @@ function mergeDeep(person1, person2)
         if(!(key in person1))
         {
             // if key is object 
-            if(typeof person1[key] == "object"){
+            if(typeof person2[key] === "object" && person2[key] !== null ){
                 // making separet copy of object inside person1
                 person1[key] = structuredClone(person2[key]);
             }

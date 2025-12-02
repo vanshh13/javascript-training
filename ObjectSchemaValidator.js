@@ -24,17 +24,29 @@ function validate(data, schema)
         // present in data
         if(key in data)
         {
-            if(typeof data[key] == "object"){
+            // validate inner schema for object
+            if(schema[key].type == "object")
+            {
+                // if data isn't object and it's null or array type
+                if(typeof data[key] !== "object" || data[key] === null || Array.isArray(data[key])){
+                    console.log(`${key} must be an object !!`);
+                    return false;
+                }
+
                 let innerdata = data[key];
                 let innerschema = schema[key].schema;
-                        if( !(validate(innerdata, innerschema)) ) {
-                            console.log(`Object  ${key}  has invalid schema !!`);
-                            return false;
-                        }
+
+                if( !(validate(innerdata, innerschema)) ) {
+                    console.log(`Object  ${key}  has invalid schema !!`);
+                    return false;
+                }
                 
             }
             else{
-                if(typeof data[key] == schema[key].type){
+
+                // Type checking for non-object fields
+                if(typeof data[key] === schema[key].type){
+
                     if(key == "name"){
                         if(!(data[key].length >= schema[key].minLength)){
                             console.log("Length of name must be grether than " + schema[key].minLength);
@@ -50,13 +62,13 @@ function validate(data, schema)
                 }
                 // data type mismatched
                 else{
-                    console.log(key + " data-type must be " + key.type  + " !!");
+                    console.log(key + " data-type must be " + schema[key].type  + " !!");
                     return false;
                 }
             }
         }
         // if key isn't present inside data and it's required according to schema then,
-        else if(schema[key].required == true && (!(key in data)) ){
+        else if(schema[key].required === true ){
             console.log(key + " required to be present in data !!");
             return false;
         }
